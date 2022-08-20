@@ -4,6 +4,7 @@ using OpenQA.Selenium.DevTools;
 using OpenQA.Selenium.Support.UI;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -43,10 +44,9 @@ namespace HybridFramework.actions.commons
             driver.Navigate().Forward();
         }
 
-        public void refreshCurrentPage(WebDriver driver)
-        {
-            driver.Navigate().Refresh();
-        }
+
+
+
 
         private By getByXpath(String xpathLocator)
         {
@@ -59,5 +59,6 @@ namespace HybridFramework.actions.commons
             WebDriverWait explicitWait = new WebDriverWait(driver, TimeSpan.FromSeconds(30));
             var element = explicitWait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementIsVisible(By.CssSelector(cssLocator)));
         }
+
     }
 }
