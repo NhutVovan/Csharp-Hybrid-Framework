@@ -13,14 +13,15 @@ using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 
-namespace HybridFramework.actions.commons
+namespace Hybrid_Framework.actions.commons
 {
-    internal class BasePage
+    public class BasePage
     {
         public static BasePage GetBasePageObject()
         {
@@ -131,15 +132,10 @@ namespace HybridFramework.actions.commons
             }
         }
 
-        private By GetByCssSelector(String cssLocator)
-        {
-            return By.CssSelector(cssLocator);
-        }
-
         public void WaitForElementVisibleCssSelector(IWebDriver driver, String cssLocator)
         {
             WebDriverWait explicitWait = new WebDriverWait(driver, TimeSpan.FromSeconds(GlobalConstants.LONG_TIMEOUT));
-            var element = explicitWait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementIsVisible(By.CssSelector(cssLocator)));
+            explicitWait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementIsVisible(By.CssSelector(cssLocator)));
         }
 
         private By GetByXpath(String xpathLocator)
@@ -421,7 +417,126 @@ namespace HybridFramework.actions.commons
             jsExecutor.ExecuteScript("arguments[0].setAttribute(arguments[1],arguments[2])", element, "style", originalStyle);
         }
 
+        public void ClickToElementByJS(IWebDriver driver, String xpathLocator)
+        {
+            IJavaScriptExecutor jsExecutor = (IJavaScriptExecutor)driver;
+            jsExecutor.ExecuteScript("arguments[0].click();", GetWebElement(driver, xpathLocator));
+        }
 
+        public void ScrollToElement(IWebDriver driver, String xpathLocator)
+        {
+            IJavaScriptExecutor jsExecutor = (IJavaScriptExecutor)driver;
+            jsExecutor.ExecuteScript("arguments[0].scrollIntoView(true);", GetWebElement(driver, xpathLocator));
+        }
+
+        public String GetElementValueByJS(IWebDriver driver, String xpathLocator)
+        {
+            IJavaScriptExecutor jsExecutor = (IJavaScriptExecutor)driver;
+            return (String)jsExecutor.ExecuteScript("return $(document.evaluate(\"" + xpathLocator + "\", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue).val()");
+        }
+
+        public void RemoveAttributeInDOM(IWebDriver driver, String xpathLocator, String AttributeRemove)
+        {
+            IJavaScriptExecutor jsExecutor = (IJavaScriptExecutor)driver;
+            jsExecutor.ExecuteScript("arguments[0].removeAttribute('" + AttributeRemove + "');", GetWebElement(driver, xpathLocator));
+        }
+
+        public String GetElementValidationMessage(IWebDriver driver, String xpathLocator)
+        {
+            IJavaScriptExecutor jsExecutor = (IJavaScriptExecutor)driver;
+            return (String)jsExecutor.ExecuteScript("arguments[0].validationMessage;", GetWebElement(driver, xpathLocator));
+        }
+
+        public Boolean IsImageLoaded(IWebDriver driver, String xpathLocator)
+        {
+            IJavaScriptExecutor jsExecutor = (IJavaScriptExecutor)driver;
+            Boolean status = (Boolean)jsExecutor.ExecuteScript("return arguments[0].complete && typeof arguments[0].naturalWidth != \"undefined\" && arguments[0].naturalWidth > 0", GetWebElement(driver, xpathLocator));
+            if (status)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public Boolean IsImageLoaded(IWebDriver driver, String xpathLocator, String? dynamicValues)
+        {
+            IJavaScriptExecutor jsExecutor = (IJavaScriptExecutor)driver;
+            Boolean status = (Boolean)jsExecutor.ExecuteScript("return arguments[0].complete && typeof arguments[0].naturalWidth != \"undefined\" && arguments[0].naturalWidth > 0", GetWebElement(driver, GetDynamicXpath(xpathLocator, dynamicValues)));
+            if (status)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public void WaitForElementVisible(IWebDriver driver, String xpathLocator)
+        {
+            WebDriverWait explicitWait = new WebDriverWait(driver, TimeSpan.FromSeconds(GlobalConstants.LONG_TIMEOUT));
+            explicitWait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementIsVisible(GetByXpath(xpathLocator)));
+        }
+
+        public void WaitForElementVisible(IWebDriver driver, String xpathLocator, String? dynamicValues)
+        {
+            WebDriverWait explicitWait = new WebDriverWait(driver, TimeSpan.FromSeconds(GlobalConstants.LONG_TIMEOUT));
+            explicitWait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementIsVisible(GetByXpath(GetDynamicXpath(xpathLocator, dynamicValues))));
+        }
+
+        public void WaitForAllElementVisible(IWebDriver driver, String xpathLocator)
+        {
+            WebDriverWait explicitWait = new WebDriverWait(driver, TimeSpan.FromSeconds(GlobalConstants.LONG_TIMEOUT));
+            explicitWait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.VisibilityOfAllElementsLocatedBy(GetByXpath(xpathLocator)));
+        }
+
+        public void WaitForAllElementVisible(IWebDriver driver, String xpathLocator, String? dynamicValues)
+        {
+            WebDriverWait explicitWait = new WebDriverWait(driver, TimeSpan.FromSeconds(GlobalConstants.LONG_TIMEOUT));
+            explicitWait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.VisibilityOfAllElementsLocatedBy(GetByXpath(GetDynamicXpath(xpathLocator, dynamicValues))));
+        }
+
+        public void WaitForElementInvisible(IWebDriver driver, String xpathLocator)
+        {
+            WebDriverWait explicitWait = new WebDriverWait(driver, TimeSpan.FromSeconds(GlobalConstants.LONG_TIMEOUT));
+            explicitWait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.InvisibilityOfElementLocated(GetByXpath(xpathLocator)));
+        }
+
+        public void WaitForElementInvisible(IWebDriver driver, String xpathLocator, String? dynamicValues)
+        {
+            WebDriverWait explicitWait = new WebDriverWait(driver, TimeSpan.FromSeconds(GlobalConstants.LONG_TIMEOUT));
+            explicitWait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.InvisibilityOfElementLocated(GetByXpath(GetDynamicXpath(xpathLocator, dynamicValues))));
+        }
+
+        public void WaitForElementUndisplyed(IWebDriver driver, String xpathLocator)
+        {
+            //Wait for element un-displayed in DOM or not in DOM and override implicit timeout
+            WebDriverWait explicitWait = new WebDriverWait(driver, TimeSpan.FromSeconds(GlobalConstants.SHORT_TIMEOUT));
+            OverrideImplicitTimeout(driver, GlobalConstants.SHORT_TIMEOUT);
+            explicitWait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.InvisibilityOfElementLocated(GetByXpath(xpathLocator)));
+            OverrideImplicitTimeout(driver, GlobalConstants.LONG_TIMEOUT);
+        }
+
+        public void WaitForElementClickable(IWebDriver driver, String xpathLocator)
+        {
+            WebDriverWait explicitWait = new WebDriverWait(driver, TimeSpan.FromSeconds(GlobalConstants.LONG_TIMEOUT));
+            explicitWait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(GetByXpath(xpathLocator)));
+        }
+
+        public void waitForElementClickable(WebDriver driver, String xpathLocator, String? dynamicValues)
+        {
+            WebDriverWait explicitWait = new WebDriverWait(driver, TimeSpan.FromSeconds(GlobalConstants.LONG_TIMEOUT));
+            explicitWait.Until(ExpectedConditions.ElementToBeClickable(GetByXpath(GetDynamicXpath(xpathLocator, dynamicValues))));
+        }
+
+        public int GetRandomNumber()
+        {
+            Random Rand = new Random();
+            return Rand.Next(9999);
+        }
 
     }
 }
