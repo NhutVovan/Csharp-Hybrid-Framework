@@ -17,6 +17,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using ColorHelper;
 
 
 namespace Hybrid_Framework.actions.commons
@@ -195,6 +196,12 @@ namespace Hybrid_Framework.actions.commons
             select.SelectByText(textItem);
         }
 
+        public String GetFirstSelectedDefaultDropdown(WebDriver driver, String xpathLocator)
+        {
+            SelectElement select = new SelectElement(GetWebElement(driver, xpathLocator));
+            return select.Options.First().Text;
+        }
+
         public Boolean IsDropdownMultiple(IWebDriver driver, String xpathLocator)
         {
             SelectElement select = new SelectElement(GetWebElement(driver, xpathLocator));
@@ -252,6 +259,12 @@ namespace Hybrid_Framework.actions.commons
             return GetWebElement(driver, xpathLocator).GetCssValue(PropertyName);
         }
 
+        public String GetHexaColorFromRgba(RGB RgbValue)
+        {
+  
+            return ColorHelper.ColorConverter.RgbToHex(RgbValue).ToString();
+        }
+        
         public int GetElementSize(IWebDriver driver, String xpathLocator)
         {
             return GetListWebElement(driver, xpathLocator).Count;
@@ -349,6 +362,11 @@ namespace Hybrid_Framework.actions.commons
             {
                 return false;
             }
+        }
+
+        public void overrideImplicitTimeout(WebDriver driver, long timeout)
+        {
+            driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(timeout);
         }
 
         public Boolean IsElementEnabled(IWebDriver driver, String xpathLocator)

@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="ColorHelper" Version="1.8.0" />
     <PackageReference Include="DotNetSeleniumExtras.WaitHelpers" Version="3.11.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.3.0" />
     <PackageReference Include="NUnit" Version="3.13.3" />
@@ -17,7 +18,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="interfaces\" />
     <Folder Include="resources\" />
     <Folder Include="testcases\projectname.admin\" />
     <Folder Include="testdata\" />

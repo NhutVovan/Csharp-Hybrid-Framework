@@ -12,7 +12,7 @@ using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
 
 namespace Hybrid_Framework.actions.commons
 {
-    internal class BaseTest
+    public class BaseTest
     {
         private IWebDriver driverBaseTest = null;
         protected IWebDriver GetBrowserDriver(String browserName)
@@ -47,6 +47,14 @@ namespace Hybrid_Framework.actions.commons
             driverBaseTest.Manage().Window.Maximize();
 
             return driverBaseTest;
+        }
+
+
+        public static int GetRandomNumber()
+        {
+            Random Rand = new Random();
+            return Rand.Next(9999);
+
         }
     }
 }
